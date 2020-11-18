@@ -136,6 +136,9 @@ public:
 
     uint16_t GetExchangeId() const { return mExchangeId; }
 
+    size_t GetMTU() { return 1280; /* TODO: calculate MTU */ }
+    bool IsUnicast() { return true; /* multi/group cast not implemented yet */ }
+
     /*
      * In order to use reference counting (see refCount below) we use a hold/free paradigm where users of the exchange
      * can hold onto it while it's out of their direct control to make sure it isn't closed before everyone's ready.

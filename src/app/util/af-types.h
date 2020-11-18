@@ -52,6 +52,7 @@
 #include <stdint.h>  // For various uint*_t types
 
 #include "basic-types.h"
+#include "context.h"
 #include "gen/enums.h"
 #include "types_stub.h" // For various types.
 
@@ -1244,7 +1245,7 @@ typedef void (*EmberAfDefaultResponseFunction)(chip::EndpointId endpoint, chip::
  *
  * This function is called when a message is sent.
  */
-typedef void (*EmberAfMessageSentFunction)(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame,
+typedef void (*EmberAfMessageSentFunction)(DataModelContext & context, EmberApsFrame * apsFrame,
                                            uint16_t msgLen, uint8_t * message, EmberStatus status);
 
 /**
@@ -1257,10 +1258,7 @@ typedef struct
     EmberAfMessageSentFunction callback;
     EmberApsFrame * apsFrame;
     uint8_t * message;
-    uint64_t indexOrDestination;
     uint16_t messageLength;
-    EmberOutgoingMessageType type;
-    bool broadcast;
 } EmberAfMessageStruct;
 
 /**

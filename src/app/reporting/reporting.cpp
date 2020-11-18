@@ -64,7 +64,7 @@ static void removeConfigurationAndScheduleTick(uint8_t index);
 static EmberAfStatus configureReceivedAttribute(const EmberAfClusterCommand * cmd, AttributeId attributeId, uint8_t mask,
                                                 uint16_t timeout);
 static void putReportableChangeInResp(const EmberAfPluginReportingEntry * entry, EmberAfAttributeType dataType);
-static void retrySendReport(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame, uint16_t msgLen,
+static void retrySendReport(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen,
                             uint8_t * message, EmberStatus status);
 static uint32_t computeStringHash(uint8_t * data, uint8_t length);
 
@@ -90,13 +90,13 @@ EmberAfStatus emberAfPluginReportingConfiguredCallback(const EmberAfPluginReport
     return EMBER_ZCL_STATUS_SUCCESS;
 }
 
-static void retrySendReport(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame, uint16_t msgLen,
+static void retrySendReport(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen,
                             uint8_t * message, EmberStatus status)
 {
     // Retry once, and do so by unicasting without a pointer to this callback
     if (status != EMBER_SUCCESS)
     {
-        emberAfSendUnicast(type, indexOrDestination, apsFrame, msgLen, message);
+        emberAfSendUnicast(context, apsFrame, msgLen, message);
     }
 }
 
@@ -276,8 +276,7 @@ void emberAfPluginReportingTickEventHandler(void)
                 if (status == (EmberAfStatus) EMBER_SUCCESS && bindingEntry.local == entry.endpoint &&
                     bindingEntry.clusterId == entry.clusterId)
                 {
-                    currentPayloadMaxLength =
-                        emberAfMaximumApsPayloadLength(bindingEntry.type, bindingEntry.networkIndex, apsFrame);
+                    currentPayloadMaxLength = bindingEntry.exchangeContext->GetMTU() /* TODO: minus extra header space */;
                     if (currentPayloadMaxLength < smallestPayloadMaxLength)
                     {
                         smallestPayloadMaxLength = currentPayloadMaxLength;
@@ -362,7 +361,7 @@ static void conditionallySendReport(EndpointId endpoint, ClusterId clusterId)
         }
 
 #ifdef EMBER_AF_PLUGIN_REPORTING_ENABLE_GROUP_BOUND_REPORTS
-        emberAfSendCommandMulticastToBindings();
+        emberAfSendCommandUnicastToBindings();
 #endif // EMBER_AF_PLUGIN_REPORTING_ENABLE_GROUP_BOUND_REPORTS
     }
 }

@@ -85,6 +85,7 @@
 //#include "app/framework/util/print.h"
 //#include "app/framework/util/time-util.h"
 #include "client-api.h"
+#include "context.h"
 #include "debug-printing.h"
 #include "ember-print.h"
 
@@ -1237,61 +1238,14 @@ EmberStatus emberAfSendResponse(void);
 EmberStatus emberAfSendResponseWithCallback(EmberAfMessageSentFunction callback);
 
 /**
- * @brief Sends multicast.
- */
-EmberStatus emberAfSendMulticast(chip::GroupId multicastId, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message);
-
-/**
- * @brief Multicasts the message to the group in the binding table that
- * matches the cluster and source endpoint in the APS frame.  Note: if the
- * binding table contains many matching entries, calling this API cause a
- * significant amount of network traffic. Care should be taken when considering
- * the effects of broadcasts in a network.
- */
-EmberStatus emberAfSendMulticastToBindings(EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message);
-
-/**
- * @brief Sends Multicast with alias with attached message sent callback
- */
-EmberStatus emberAfSendMulticastWithAliasWithCallback(chip::GroupId multicastId, EmberApsFrame * apsFrame, uint16_t messageLength,
-                                                      uint8_t * message, EmberNodeId alias, uint8_t sequence,
-                                                      EmberAfMessageSentFunction callback);
-
-/**
- * @brief Sends multicast with attached message sent callback.
- */
-EmberStatus emberAfSendMulticastWithCallback(chip::GroupId multicastId, EmberApsFrame * apsFrame, uint16_t messageLength,
-                                             uint8_t * message, EmberAfMessageSentFunction callback);
-
-/**
- * @brief Sends broadcast.
- */
-EmberStatus emberAfSendBroadcast(EmberNodeId destination, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message);
-
-/**
- * @brief Sends broadcast with attached message sent callback.
- */
-EmberStatus emberAfSendBroadcastWithCallback(EmberNodeId destination, EmberApsFrame * apsFrame, uint16_t messageLength,
-                                             uint8_t * message, EmberAfMessageSentFunction callback);
-
-/**
- * @brief Sends broadcast with alias with attached message sent callback.
- */
-EmberStatus emberAfSendBroadcastWithAliasWithCallback(EmberNodeId destination, EmberApsFrame * apsFrame, uint16_t messageLength,
-                                                      uint8_t * message, EmberNodeId alias, uint8_t sequence,
-                                                      EmberAfMessageSentFunction callback);
-
-/**
  * @brief Sends unicast.
  */
-EmberStatus emberAfSendUnicast(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame,
-                               uint16_t messageLength, uint8_t * message);
+EmberStatus emberAfSendUnicast(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message);
 
 /**
  * @brief Sends unicast with attached message sent callback.
  */
-EmberStatus emberAfSendUnicastWithCallback(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame,
-                                           uint16_t messageLength, uint8_t * message, EmberAfMessageSentFunction callback);
+EmberStatus emberAfSendUnicastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message, EmberAfMessageSentFunction callback);
 
 /**
  * @brief Unicasts the message to each remote node in the binding table that
@@ -1340,77 +1294,16 @@ EmberStatus emberAfSendCommandUnicastToBindingsWithCallback(EmberAfMessageSentFu
  * @brief Sends the command prepared with emberAfFill.... macro.
  *
  * This function is used to send a command that was previously prepared
- * using the emberAfFill... macros from the client command API. It
- * will be sent as multicast.
- */
-EmberStatus emberAfSendCommandMulticast(chip::GroupId multicastId);
-
-/**
- * @brief Sends the command prepared with emberAfFill.... macro.
- *
- * This function is used to send a command that was previously prepared
- * using the emberAfFill... macros from the client command API. It
- * will be sent as multicast.
- */
-EmberStatus emberAfSendCommandMulticastWithAlias(chip::GroupId multicastId, EmberNodeId alias, uint8_t sequence);
-
-/**
- * @brief emberAfSendCommandMulticast with attached message sent callback.
- */
-EmberStatus emberAfSendCommandMulticastWithCallback(chip::GroupId multicastId, EmberAfMessageSentFunction callback);
-
-/**
- * @brief Sends the command prepared with emberAfFill.... macro.
- *
- * This function is used to send a command that was previously prepared
- * using the emberAfFill... macros from the client command API. It
- * will be sent as multicast to the group specified in the binding table that
- * matches the cluster and source endpoint in the APS frame.  Note: if the
- * binding table contains many matching entries, calling this API cause a
- * significant amount of network traffic.
- */
-EmberStatus emberAfSendCommandMulticastToBindings(void);
-/**
- * @brief Sends the command prepared with emberAfFill.... macro.
- *
- * This function is used to send a command that was previously prepared
  * using the emberAfFill... macros from the client command API.
  * It will be sent as unicast.
  */
-EmberStatus emberAfSendCommandUnicast(EmberOutgoingMessageType type, uint16_t indexOrDestination);
+EmberStatus emberAfSendCommandUnicast(DataModelContext & context);
 
 /**
  * @brief emberAfSendCommandUnicast with attached message sent callback.
  */
-EmberStatus emberAfSendCommandUnicastWithCallback(EmberOutgoingMessageType type, uint64_t indexOrDestination,
-                                                  EmberAfMessageSentFunction callback);
+EmberStatus emberAfSendCommandUnicastWithCallback(DataModelContext & context, EmberAfMessageSentFunction callback);
 
-/**
- * @brief Sends the command prepared with emberAfFill.... macro.
- *
- * This function is used to send a command that was previously prepared
- * using the emberAfFill... macros from the client command API.
- */
-EmberStatus emberAfSendCommandBroadcast(EmberNodeId destination);
-
-/**
- * @brief emberAfSendCommandBroadcast with attached message sent callback.
- */
-EmberStatus emberAfSendCommandBroadcastWithCallback(EmberNodeId destination, EmberAfMessageSentFunction callback);
-
-/**
- * @brief emberAfSendCommandBroadcast from alias with attached message sent callback.
- */
-EmberStatus emberAfSendCommandBroadcastWithAliasWithCallback(EmberNodeId destination, EmberNodeId alias, uint8_t sequence,
-                                                             EmberAfMessageSentFunction callback);
-
-/**
- * @brief Sends the command prepared with emberAfFill.... macro.
- *
- * This function is used to send a command that was previously prepared
- * using the emberAfFill... macros from the client command API.
- */
-EmberStatus emberAfSendCommandBroadcastWithAlias(EmberNodeId destination, EmberNodeId alias, uint8_t sequence);
 /**
  * @brief Sends the command prepared with emberAfFill.... macro.
  *
@@ -1460,24 +1353,6 @@ EmberStatus emberAfSendImmediateDefaultResponse(EmberAfStatus status);
  * @brief emberAfSendImmediateDefaultResponse with attached message sent callback.
  */
 EmberStatus emberAfSendImmediateDefaultResponseWithCallback(EmberAfStatus status, EmberAfMessageSentFunction callback);
-
-/**
- * @brief Returns the maximum size of the payload that the Application
- * Support sub-layer will accept for the given message type, destination, and
- * APS frame.
- *
- * The size depends on multiple factors, including the security level in use
- * and additional information added to the message to support the various
- * options.
- *
- * @param type The outgoing message type.
- * @param indexOrDestination Depending on the message type, this is either the
- *  EmberNodeId of the destination, an index into the address table, an index
- *  into the binding table, the multicast identifier, or a broadcast address.
- * @param apsFrame The APS frame for the message.
- * @return The maximum APS payload length for the given message.
- */
-uint8_t emberAfMaximumApsPayloadLength(EmberOutgoingMessageType type, uint64_t indexOrDestination, EmberApsFrame * apsFrame);
 
 /**
  * @brief Access to client API APS frame.

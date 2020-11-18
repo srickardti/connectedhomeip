@@ -26,6 +26,8 @@
 #include <inet/InetError.h>
 #include <inet/InetLayer.h>
 #include <lib/mdns/DiscoveryManager.h>
+#include <messaging/ExchangeMgr.h>
+#include <messaging/ExchangeDelegate.h>
 #include <platform/CHIPDeviceLayer.h>
 #include <support/CodeUtils.h>
 #include <support/ErrorStr.h>
@@ -40,47 +42,12 @@ using namespace ::chip::Inet;
 using namespace ::chip::Transport;
 using namespace ::chip::DeviceLayer;
 
+extern chip::ExchangeDelegate * GetDataModelHandler();
+
 namespace {
 
-class ServerCallback : public SecureSessionMgrDelegate
-{
-public:
-    void OnMessageReceived(const PacketHeader & header, const PayloadHeader & payloadHeader, Transport::PeerConnectionState * state,
-                           System::PacketBuffer * buffer, SecureSessionMgrBase * mgr) override
-    {
-        const size_t data_len = buffer->DataLength();
-        char src_addr[PeerAddress::kMaxToStringSize];
-
-        // as soon as a client connects, assume it is connected
-        VerifyOrExit(buffer != NULL, ChipLogProgress(AppServer, "Received data but couldn't process it..."));
-        VerifyOrExit(header.GetSourceNodeId().HasValue(), ChipLogProgress(AppServer, "Unknown source for received message"));
-
-        VerifyOrExit(state->GetPeerNodeId() != kUndefinedNodeId, ChipLogProgress(AppServer, "Unknown source for received message"));
-
-        state->GetPeerAddress().ToString(src_addr, sizeof(src_addr));
-
-        ChipLogProgress(AppServer, "Packet received from %s: %zu bytes", src_addr, static_cast<size_t>(data_len));
-
-        HandleDataModelMessage(header, buffer, mgr);
-        buffer = NULL;
-
-    exit:
-        // HandleDataModelMessage calls Free on the buffer without an AddRef, if HandleDataModelMessage was not called, free the
-        // buffer.
-        if (buffer != NULL)
-        {
-            System::PacketBuffer::Free(buffer);
-        }
-    }
-
-    void OnNewConnection(Transport::PeerConnectionState * state, SecureSessionMgrBase * mgr) override
-    {
-        ChipLogProgress(AppServer, "Received a new connection.");
-    }
-};
-
 DemoSessionManager gSessions;
-ServerCallback gCallbacks;
+ExchangeManager gExchangeManager;
 SecurePairingUsingTestSecret gTestPairing;
 RendezvousServer gRendezvousServer;
 
@@ -122,7 +89,9 @@ void InitServer()
     err = gSessions.NewPairing(peer, chip::kTestControllerNodeId, &gTestPairing);
     SuccessOrExit(err);
 
-    gSessions.SetDelegate(&gCallbacks);
+    gExchangeManager.Init(&gSessions);
+    gSessions.SetDelegate(&gExchangeManager);
+    gExchangeManager.RegisterUnsolicitedMessageHandler(Protocols::kProtocol_InteractionModel, 0, GetDataModelHandler());
     chip::Mdns::DiscoveryManager::GetInstance().StartPublishDevice(chip::Inet::kIPAddressType_IPv6);
 
 exit:
