@@ -102,4 +102,3 @@ public:
 private:
     chip::ExchangeContext * mExchangeContext = nullptr;
 };
-

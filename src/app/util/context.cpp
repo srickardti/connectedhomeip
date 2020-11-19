@@ -65,4 +65,3 @@ void DataModelHandler::OnMessageReceived(chip::ExchangeContext * ec, const chip:
 
 void DataModelHandler::OnResponseTimeout(chip::ExchangeContext * ec) {}
 void DataModelHandler::OnExchangeClosing(chip::ExchangeContext * ec) {}
-

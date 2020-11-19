@@ -585,4 +585,3 @@ EmberStatus emberAfInterpanSendMessageCallback(EmberAfInterpanHeader * header, u
  *
  */
 bool emberAfStartMoveCallback();
-
