@@ -60,6 +60,8 @@
 #include "app/util/ezsp/ezsp-enum.h"
 #endif
 
+#include "messaging/ExchangeContext.h"
+
 /**
  * @brief Type for referring to ZCL attribute type
  */
@@ -1255,6 +1257,7 @@ typedef void (*EmberAfMessageSentFunction)(DataModelContext & context, EmberApsF
  */
 typedef struct
 {
+	chip::ExchangeContext & exchangeContext;
     EmberAfMessageSentFunction callback;
     EmberApsFrame * apsFrame;
     uint8_t * message;

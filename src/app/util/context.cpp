@@ -28,21 +28,9 @@ chip::ExchangeDelegate * GetDataModelHandler()
 
 void DataModelHandler::OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId, uint8_t msgType, chip::System::PacketBuffer * payload)
 {
-    // currently we support only one transaction
-    static DataModelTransaction sTransaction;
-    ec->SetDelegate(&sTransaction);
-    // propagate first packet, following packets will be delivered to transaction directly.
-    sTransaction.OnMessageReceived(ec, packetHeader, protocolId, msgType, payload);
-}
-
-void DataModelHandler::OnResponseTimeout(chip::ExchangeContext * ec) {}
-void DataModelHandler::OnExchangeClosing(chip::ExchangeContext * ec) {}
-
-void DataModelTransaction::OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId, uint8_t msgType, chip::System::PacketBuffer * buffer)
-{
-    auto contextLock = dmContext.Scoped(this, ec);
+    auto contextLock = dmContext.Scoped(ec);
     EmberApsFrame frame;
-    bool ok = extractApsFrame(buffer->Start(), buffer->DataLength(), &frame) > 0;
+    bool ok = extractApsFrame(payload->Start(), payload->DataLength(), &frame) > 0;
     if (ok)
     {
         ChipLogProgress(Zcl, "APS frame processing success!");
@@ -50,19 +38,19 @@ void DataModelTransaction::OnMessageReceived(chip::ExchangeContext * ec, const c
     else
     {
         ChipLogProgress(Zcl, "APS frame processing failure!");
-        chip::System::PacketBuffer::Free(buffer);
+        chip::System::PacketBuffer::Free(payload);
         return;
     }
 
     uint8_t * message;
-    uint16_t messageLen = extractMessage(buffer->Start(), buffer->DataLength(), &message);
+    uint16_t messageLen = extractMessage(payload->Start(), payload->DataLength(), &message);
     ok                  = emberAfProcessMessage(&frame,
                                0, // type
                                message, messageLen,
                                packetHeader.GetSourceNodeId().Value(), // source identifier
                                NULL);
 
-    chip::System::PacketBuffer::Free(buffer);
+    chip::System::PacketBuffer::Free(payload);
 
     if (ok)
     {
@@ -72,8 +60,9 @@ void DataModelTransaction::OnMessageReceived(chip::ExchangeContext * ec, const c
     {
         ChipLogProgress(Zcl, "Data model processing failure!");
     }
-    buffer = NULL;
+    payload = NULL;
 }
 
-void DataModelTransaction::OnResponseTimeout(chip::ExchangeContext * ec) {}
-void DataModelTransaction::OnExchangeClosing(chip::ExchangeContext * ec) {}
+void DataModelHandler::OnResponseTimeout(chip::ExchangeContext * ec) {}
+void DataModelHandler::OnExchangeClosing(chip::ExchangeContext * ec) {}
+

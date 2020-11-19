@@ -67,6 +67,14 @@ enum
     EMBER_UNUSED_BINDING = 0,
     /** A unicast binding whose 64-bit identifier is the destination EUI64. */
     EMBER_UNICAST_BINDING = 1,
+    /** A unicast binding whose 64-bit identifier is the many-to-one
+     * destination EUI64.  Route discovery should be disabled when sending
+     * unicasts via many-to-one bindings. */
+    EMBER_MANY_TO_ONE_BINDING = 2,
+    /** A multicast binding whose 64-bit identifier is the group address. This
+     * binding can be used to send messages to the group and to receive
+     * messages sent to the group. */
+    EMBER_MULTICAST_BINDING = 3,
 };
 /** @brief The type of method used for joining.
  *
@@ -485,7 +493,6 @@ enum
  * cluster ID and either the destination EUI64 (for unicast bindings) or the
  * 64-bit group address (for multicast bindings).
  */
-class DataModelTransaction;
 typedef struct
 {
     /** The type of binding. */
@@ -500,13 +507,10 @@ typedef struct
      * just that listed in the binding.
      */
     chip::ClusterId clusterId;
-    /** The endpoint on the remote node (specified by \c identifier). */
-    chip::EndpointId remote;
 
     /** The exchange associated with the binding. Messages are send or received
      * through the exchange
      */
-    DataModelTransaction * transaction;
     chip::ExchangeContext * exchangeContext;
 
     /** The index of the network the binding belongs to. */

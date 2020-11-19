@@ -133,6 +133,7 @@ public:
     ExchangeManager * GetExchangeMgr() const { return mExchangeMgr; }
 
     uint64_t GetPeerNodeId() const { return mPeerNodeId; }
+    uint64_t GetGroupId() const { return 0; /* TODO: group not implemented yet */ }
 
     uint16_t GetExchangeId() const { return mExchangeId; }
 

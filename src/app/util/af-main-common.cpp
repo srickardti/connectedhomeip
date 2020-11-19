@@ -267,7 +267,7 @@ static EmberStatus send(chip::ExchangeContext & exchangeContext, EmberApsFrame *
 
     {
         EmberAfMessageStruct messageStruct = {
-            callback, apsFrame, message, messageLength,
+            exchangeContext, callback, apsFrame, message, messageLength,
         };
         // Called prior to fragmentation in case the mesasge does not go out over the
         // Zigbee radio, and instead goes to some other transport that does not require
@@ -284,7 +284,7 @@ static EmberStatus send(chip::ExchangeContext & exchangeContext, EmberApsFrame *
 
     if (messageLength <= dmContext.GetExchangeContext().GetMTU())
     {
-        status = chipSendUnicast(exchangeContext, apsFrame, messageLength, message);
+        status = emAfSend(exchangeContext, apsFrame, (uint8_t) messageLength, message, &messageTag, alias, sequence);
 #ifdef EMBER_AF_PLUGIN_FRAGMENTATION
     }
     else if (!broadcast)
@@ -333,6 +333,97 @@ static EmberStatus send(chip::ExchangeContext & exchangeContext, EmberApsFrame *
     return status;
 }
 
+EmberStatus emberAfSendMulticastWithAliasWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength,
+                                                      uint8_t * message, EmberNodeId alias, uint8_t sequence,
+                                                      EmberAfMessageSentFunction callback)
+{
+    return send(context.GetExchangeContext(), apsFrame, messageLength, message,
+                true, // broadcast
+                alias, sequence, callback);
+}
+
+EmberStatus emberAfSendMulticastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength,
+                                             uint8_t * message, EmberAfMessageSentFunction callback)
+{
+    return send(context.GetExchangeContext(), apsFrame, messageLength, message,
+                true, // broadcast?
+                0,    // alias
+                0,    // sequence
+                callback);
+}
+
+EmberStatus emberAfSendMulticast(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message)
+{
+    return emberAfSendMulticastWithCallback(context, apsFrame, messageLength, message, NULL);
+}
+
+EmberStatus emberAfSendMulticastToBindings(EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message)
+{
+    EmberStatus status = EMBER_INVALID_BINDING_INDEX;
+    uint8_t i;
+    EmberBindingTableEntry binding;
+
+    if ((NULL == apsFrame) || (0 == messageLength) || (NULL == message))
+    {
+        return EMBER_BAD_ARGUMENT;
+    }
+
+    for (i = 0; i < EMBER_BINDING_TABLE_SIZE; i++)
+    {
+        status = emberGetBinding(i, &binding);
+        if (status != EMBER_SUCCESS)
+        {
+            return status;
+        }
+
+        if (binding.type == EMBER_MULTICAST_BINDING && binding.local == apsFrame->sourceEndpoint &&
+            binding.clusterId == apsFrame->clusterId)
+        {
+            apsFrame->groupId             = binding.exchangeContext->GetGroupId();
+            apsFrame->destinationEndpoint = binding.exchangeContext->GetPeerNodeId();
+
+            status = send(*binding.exchangeContext, apsFrame, messageLength, message,
+                          true, // broadcast?
+                          0,    // alias
+                          0,    // sequence
+                          nullptr);
+
+            if (status != EMBER_SUCCESS)
+            {
+                return status;
+            }
+        }
+    }
+
+    return status;
+}
+
+EmberStatus emberAfSendBroadcastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength,
+                                             uint8_t * message, EmberAfMessageSentFunction callback)
+{
+    return send(context.GetExchangeContext(), apsFrame, messageLength, message,
+                true, // broadcast?
+                0,    // alias
+                0,    // sequence
+                callback);
+}
+
+EmberStatus emberAfSendBroadcastWithAliasWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength,
+                                                      uint8_t * message, EmberNodeId alias, uint8_t sequence,
+                                                      EmberAfMessageSentFunction callback)
+{
+    return send(context.GetExchangeContext(), apsFrame, messageLength, message,
+                true,     // broadcast?
+                alias,    // alias
+                sequence, // sequence
+                callback);
+}
+
+EmberStatus emberAfSendBroadcast(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message)
+{
+    return emberAfSendBroadcastWithCallback(context, apsFrame, messageLength, message, NULL);
+}
+
 EmberStatus emberAfSendUnicastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message, EmberAfMessageSentFunction callback)
 {
     return send(context.GetExchangeContext(), apsFrame, messageLength, message,
@@ -364,7 +455,7 @@ EmberStatus emberAfSendUnicastToBindingsWithCallback(EmberApsFrame * apsFrame, u
         if (binding.type == EMBER_UNICAST_BINDING && binding.local == apsFrame->sourceEndpoint &&
             binding.clusterId == apsFrame->clusterId)
         {
-            apsFrame->destinationEndpoint = binding.remote;
+            apsFrame->destinationEndpoint = binding.exchangeContext->GetPeerNodeId();
             status                        = send(*binding.exchangeContext, apsFrame, messageLength, message,
                           false, // broadcast?
                           0,     // alias
@@ -498,3 +589,9 @@ void emAfFragmentationMessageSentHandler(DataModelContext & context, EmberApsFra
     emberAfSetExternalBuffer(appResponseData, EMBER_AF_RESPONSE_BUFFER_LEN, &appResponseLength, &emberAfResponseApsFrame);
 }
 #endif // EMBER_AF_PLUGIN_FRAGMENTATION
+
+EmberStatus emAfSend(chip::ExchangeContext & exchangeContext, EmberApsFrame * apsFrame, uint8_t messageLength,
+                     uint8_t * message, uint8_t * messageTag, EmberNodeId alias, uint8_t sequence)
+{
+    return chipSendUnicast(exchangeContext, apsFrame, messageLength, message);
+}
