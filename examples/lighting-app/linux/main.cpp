@@ -46,52 +46,6 @@ using namespace chip::DeviceLayer;
 
 constexpr uint32_t kDefaultSetupPinCode = 12345678; // TODO: Should be a macro in CHIPProjectConfig.h like other example apps.
 
-void emberAfPostAttributeChangeCallback(EndpointId endpoint, ClusterId clusterId, AttributeId attributeId, uint8_t mask,
-                                        uint16_t manufacturerCode, uint8_t type, uint8_t size, uint8_t * value)
-{
-    if (clusterId != ZCL_ON_OFF_CLUSTER_ID)
-    {
-        ChipLogProgress(Zcl, "Unknown cluster ID: %d", clusterId);
-        return;
-    }
-
-    if (attributeId != ZCL_ON_OFF_ATTRIBUTE_ID)
-    {
-        ChipLogProgress(Zcl, "Unknown attribute ID: %d", attributeId);
-        return;
-    }
-
-    if (*value)
-    {
-        LightingMgr().InitiateAction(LightingManager::ON_ACTION);
-    }
-    else
-    {
-        LightingMgr().InitiateAction(LightingManager::OFF_ACTION);
-    }
-}
-
-/** @brief Cluster Init
- *
- * This function is called when a specific cluster is initialized. It gives the
- * application an opportunity to take care of cluster initialization procedures.
- * It is called exactly once for each endpoint where cluster is present.
- *
- * @param endpoint   Ver.: always
- * @param clusterId   Ver.: always
- *
- * TODO Issue #3841
- * emberAfClusterInitCallback happens before the stack initialize the cluster
- * attributes to the default value.
- * The logic here expects something similar to the deprecated Plugins callback
- * emberAfPluginOnOffClusterServerPostInitCallback.
- *
- */
-void emberAfClusterInitCallback(EndpointId endpoint, ClusterId clusterId)
-{
-    // TODO: implement any additional Cluster Server init actions
-}
-
 namespace {
 void EventHandler(const chip::DeviceLayer::ChipDeviceEvent * event, intptr_t arg)
 {
