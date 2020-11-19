@@ -234,7 +234,7 @@ static void prepareForResponse(const EmberAfClusterCommand * cmd)
 
     if (cmd->interPanHeader == NULL)
     {
-        emberAfResponseType        = static_cast<uint8_t>(emberAfResponseType & ~ZCL_UTIL_RESP_INTERPAN);
+        emberAfResponseType = static_cast<uint8_t>(emberAfResponseType & ~ZCL_UTIL_RESP_INTERPAN);
     }
     else
     {
@@ -708,7 +708,7 @@ EmberStatus emberAfSendResponseWithCallback(EmberAfMessageSentFunction callback)
     }
     else
     {
-        label = 'B';
+        label  = 'B';
         status = emberAfSendUnicastWithCallback(dmContext, &emberAfResponseApsFrame, appResponseLength, appResponseData, callback);
     }
     UNUSED_VAR(label);

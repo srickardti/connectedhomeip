@@ -22,8 +22,8 @@
 
 #include "chip-message-send.h"
 
-#include <assert.h>
 #include <app/util/common.h>
+#include <assert.h>
 #include <inet/InetLayer.h> // PacketBuffer and the like
 #include <messaging/ExchangeContext.h>
 #include <protocols/Protocols.h>

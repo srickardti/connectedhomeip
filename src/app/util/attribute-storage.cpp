@@ -205,8 +205,8 @@ void emberAfClusterDefaultResponseCallback(EndpointId endpoint, ClusterId cluste
 }
 
 // This function is used to call the per-cluster message sent callback
-void emberAfClusterMessageSentWithMfgCodeCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message, EmberStatus status,
-                                                  uint16_t mfgCode)
+void emberAfClusterMessageSentWithMfgCodeCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen,
+                                                  uint8_t * message, EmberStatus status, uint16_t mfgCode)
 {
     if (apsFrame != NULL && message != NULL && msgLen != 0)
     {
@@ -231,7 +231,8 @@ void emberAfClusterMessageSentWithMfgCodeCallback(DataModelContext & context, Em
 // This function is used to call the per-cluster message sent callback, and
 // wraps the emberAfClusterMessageSentWithMfgCodeCallback with a
 // EMBER_AF_NULL_MANUFACTURER_CODE.
-void emberAfClusterMessageSentCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message, EmberStatus status)
+void emberAfClusterMessageSentCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message,
+                                       EmberStatus status)
 {
     emberAfClusterMessageSentWithMfgCodeCallback(context, apsFrame, msgLen, message, status, EMBER_AF_NULL_MANUFACTURER_CODE);
 }

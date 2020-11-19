@@ -1245,7 +1245,8 @@ EmberStatus emberAfSendUnicast(DataModelContext & context, EmberApsFrame * apsFr
 /**
  * @brief Sends unicast with attached message sent callback.
  */
-EmberStatus emberAfSendUnicastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message, EmberAfMessageSentFunction callback);
+EmberStatus emberAfSendUnicastWithCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t messageLength,
+                                           uint8_t * message, EmberAfMessageSentFunction callback);
 
 /**
  * @brief Unicasts the message to each remote node in the binding table that

@@ -1247,8 +1247,8 @@ typedef void (*EmberAfDefaultResponseFunction)(chip::EndpointId endpoint, chip::
  *
  * This function is called when a message is sent.
  */
-typedef void (*EmberAfMessageSentFunction)(DataModelContext & context, EmberApsFrame * apsFrame,
-                                           uint16_t msgLen, uint8_t * message, EmberStatus status);
+typedef void (*EmberAfMessageSentFunction)(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message,
+                                           EmberStatus status);
 
 /**
  * @brief The EmberAfMessageStruct is a struct wrapper that
@@ -1257,7 +1257,7 @@ typedef void (*EmberAfMessageSentFunction)(DataModelContext & context, EmberApsF
  */
 typedef struct
 {
-	chip::ExchangeContext & exchangeContext;
+    chip::ExchangeContext & exchangeContext;
     EmberAfMessageSentFunction callback;
     EmberApsFrame * apsFrame;
     uint8_t * message;

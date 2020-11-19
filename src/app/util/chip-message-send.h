@@ -38,4 +38,5 @@
  *                          frame.
  * @param[in] message The message to send after the APS frame.
  */
-EmberStatus chipSendUnicast(chip::ExchangeContext & exchangeContext, EmberApsFrame * apsFrame, uint16_t messageLength, uint8_t * message);
+EmberStatus chipSendUnicast(chip::ExchangeContext & exchangeContext, EmberApsFrame * apsFrame, uint16_t messageLength,
+                            uint8_t * message);

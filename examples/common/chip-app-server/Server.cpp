@@ -26,8 +26,8 @@
 #include <inet/InetError.h>
 #include <inet/InetLayer.h>
 #include <lib/mdns/DiscoveryManager.h>
-#include <messaging/ExchangeMgr.h>
 #include <messaging/ExchangeDelegate.h>
+#include <messaging/ExchangeMgr.h>
 #include <platform/CHIPDeviceLayer.h>
 #include <support/CodeUtils.h>
 #include <support/ErrorStr.h>

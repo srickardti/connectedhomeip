@@ -15,7 +15,6 @@
  *    limitations under the License.
  */
 
-
 #pragma once
 
 #include "config.h"
@@ -36,11 +35,12 @@ public:
     // Not copyable or movable
     DataModelHandler(const DataModelHandler &) = delete;
     DataModelHandler & operator=(const DataModelHandler &) = delete;
-    DataModelHandler(DataModelHandler &&) = delete;
-    DataModelHandler& operator=(DataModelHandler &&) = delete;
+    DataModelHandler(DataModelHandler &&)                  = delete;
+    DataModelHandler & operator=(DataModelHandler &&) = delete;
 
     /* ExchangeDelegate interface functions */
-    void OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId, uint8_t msgType, chip::System::PacketBuffer * payload) override;
+    void OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId,
+                           uint8_t msgType, chip::System::PacketBuffer * payload) override;
     void OnResponseTimeout(chip::ExchangeContext * ec) override;
     void OnExchangeClosing(chip::ExchangeContext * ec) override;
 };
@@ -59,17 +59,21 @@ public:
     class DataModelContextLock
     {
     public:
-        ~DataModelContextLock() {
-            if (mContext != nullptr) mContext->Release();
+        ~DataModelContextLock()
+        {
+            if (mContext != nullptr)
+                mContext->Release();
         }
 
         DataModelContextLock(const DataModelContextLock &) = delete;
         DataModelContextLock & operator=(const DataModelContextLock &) = delete;
-        DataModelContextLock(DataModelContextLock && that) {
+        DataModelContextLock(DataModelContextLock && that)
+        {
             that.mContext = mContext;
-            mContext = nullptr;
+            mContext      = nullptr;
         }
-        DataModelContextLock& operator=(DataModelContextLock &&) = delete;
+        DataModelContextLock & operator=(DataModelContextLock &&) = delete;
+
     private:
         friend class DataModelContext;
         DataModelContextLock(DataModelContext * context) : mContext(context) {}
@@ -80,22 +84,20 @@ public:
     /* Ensure the lifespan of DataModelContext. The context will be automatically released when the lock goes out of scope. It will
      * also crash when the lock is grabbed multiple times recursively without release.
      */
-    DataModelContextLock Scoped(chip::ExchangeContext * exchangeContext) {
+    DataModelContextLock Scoped(chip::ExchangeContext * exchangeContext)
+    {
         VerifyOrDie(mExchangeContext == nullptr);
         mExchangeContext = exchangeContext;
-        return {this};
+        return { this };
     }
 
-    void Release()
-    {
-        mExchangeContext = nullptr;
-    }
+    void Release() { mExchangeContext = nullptr; }
 
     // Not copyable or movable
     DataModelContext(const DataModelContext &) = delete;
     DataModelContext & operator=(const DataModelContext &) = delete;
-    DataModelContext(DataModelContext &&) = delete;
-    DataModelContext& operator=(DataModelContext &&) = delete;
+    DataModelContext(DataModelContext &&)                  = delete;
+    DataModelContext & operator=(DataModelContext &&) = delete;
 
     chip::ExchangeContext & GetExchangeContext() { return *mExchangeContext; }
 

@@ -1,20 +1,20 @@
 
-  /*
-  *
-  *    Copyright (c) 2020 Project CHIP Authors
-  *
-  *    Licensed under the Apache License, Version 2.0 (the "License");
-  *    you may not use this file except in compliance with the License.
-  *    You may obtain a copy of the License at
-  *
-  *        http://www.apache.org/licenses/LICENSE-2.0
-  *
-  *    Unless required by applicable law or agreed to in writing, software
-  *    distributed under the License is distributed on an "AS IS" BASIS,
-  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  *    See the License for the specific language governing permissions and
-  *    limitations under the License.
-  */
+/*
+ *
+ *    Copyright (c) 2020 Project CHIP Authors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 
 #include "callback.h"
 #include "cluster-id.h"
@@ -26,7 +26,7 @@ void emberAfClusterInitCallback(EndpointId endpoint, ClusterId clusterId)
 {
     switch (clusterId)
     {
-     case ZCL_ON_OFF_CLUSTER_ID :
+    case ZCL_ON_OFF_CLUSTER_ID:
         emberAfOnOffClusterInitCallback(endpoint);
         break;
     default:
@@ -181,8 +181,8 @@ bool emberAfDefaultResponseCallback(ClusterId clusterId, CommandId commandId, Em
  * @param extended Indicates whether the response is in the extended format or
  * not.  Ver.: always
  */
-bool emberAfDiscoverAttributesResponseCallback(ClusterId clusterId, bool discoveryComplete, uint8_t * buffer,
-                                               uint16_t bufLen, bool extended)
+bool emberAfDiscoverAttributesResponseCallback(ClusterId clusterId, bool discoveryComplete, uint8_t * buffer, uint16_t bufLen,
+                                               bool extended)
 {
     return false;
 }
@@ -287,7 +287,8 @@ bool emberAfPreMessageSendCallback(EmberAfMessageStruct * messageStruct, EmberSt
  * @param message   Ver.: always
  * @param status   Ver.: always
  */
-bool emberAfMessageSentCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message, EmberStatus status)
+bool emberAfMessageSentCallback(DataModelContext & context, EmberApsFrame * apsFrame, uint16_t msgLen, uint8_t * message,
+                                EmberStatus status)
 {
     return false;
 }
@@ -309,9 +310,8 @@ bool emberAfMessageSentCallback(DataModelContext & context, EmberApsFrame * apsF
  * @param size   Ver.: always
  * @param value   Ver.: always
  */
-EmberAfStatus emberAfPreAttributeChangeCallback(EndpointId endpoint, ClusterId clusterId, AttributeId attributeId,
-                                                uint8_t mask, uint16_t manufacturerCode, uint8_t type, uint8_t size,
-                                                uint8_t * value)
+EmberAfStatus emberAfPreAttributeChangeCallback(EndpointId endpoint, ClusterId clusterId, AttributeId attributeId, uint8_t mask,
+                                                uint16_t manufacturerCode, uint8_t type, uint8_t size, uint8_t * value)
 {
     return EMBER_ZCL_STATUS_SUCCESS;
 }
@@ -332,7 +332,8 @@ EmberAfStatus emberAfPreAttributeChangeCallback(EndpointId endpoint, ClusterId c
  * @param value   Ver.: always
  */
 void emberAfPostAttributeChangeCallback(EndpointId endpoint, ClusterId clusterId, AttributeId attributeId, uint8_t mask,
-                                        uint16_t manufacturerCode, uint8_t type, uint8_t size, uint8_t * value) {}
+                                        uint16_t manufacturerCode, uint8_t type, uint8_t size, uint8_t * value)
+{}
 
 /** @brief Read Attributes Response
  *
@@ -509,7 +510,8 @@ uint32_t emberAfGetCurrentTimeCallback()
  * @param returnEndpointInfo A pointer to a data struct that will be written
  * with information about the endpoint.  Ver.: always
  */
-bool emberAfGetEndpointInfoCallback(EndpointId endpoint, uint8_t * returnNetworkIndex, EmberAfEndpointInfoStruct * returnEndpointInfo)
+bool emberAfGetEndpointInfoCallback(EndpointId endpoint, uint8_t * returnNetworkIndex,
+                                    EmberAfEndpointInfoStruct * returnEndpointInfo)
 {
     return false;
 }

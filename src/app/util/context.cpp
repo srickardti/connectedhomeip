@@ -26,7 +26,8 @@ chip::ExchangeDelegate * GetDataModelHandler()
     return &gDataModelHandler;
 }
 
-void DataModelHandler::OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId, uint8_t msgType, chip::System::PacketBuffer * payload)
+void DataModelHandler::OnMessageReceived(chip::ExchangeContext * ec, const chip::PacketHeader & packetHeader, uint32_t protocolId,
+                                         uint8_t msgType, chip::System::PacketBuffer * payload)
 {
     auto contextLock = dmContext.Scoped(ec);
     EmberApsFrame frame;
