@@ -94,8 +94,8 @@ static_library("core") {
   output_name = "libChipCore"
 
   sources = [
-    "CHIPCallbackManager.h",
     "CHIPCallback.h",
+    "CHIPCallbackManager.h",
     "CHIPCircularTLVBuffer.cpp",
     "CHIPCircularTLVBuffer.h",
     "CHIPCore.h",
